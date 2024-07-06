@@ -12,7 +12,7 @@ app.get('/', (req, res) => {
     })
 })
 
-app.use('/', require('./routes/user'))
+app.use('/', require('./routes/base'))
 
 app.listen(port, () =>
     connectDB()
