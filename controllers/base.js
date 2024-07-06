@@ -8,6 +8,32 @@ const isValidEmail = email => {
   return emailRegex.test(email)
 }
 
+// @desc    Get Avilable User's Detail
+// @route   Get /user
+// @access  Public
+const getUser = async (req, res) => {
+  try {
+    const { username } = req.body
+    if (username && username.length < 3)
+      return res
+        .status(400)
+        .send({ success: false, message: 'Username canot be less than 3 char' })
+    const user = await User.findOne({ userName: username }).select(
+      '-password -_id -userId -__v -isProfileComplete'
+    )
+
+    if (!user)
+      return res
+        .status(400)
+        .send({ success: false, message: 'Username Not found' })
+    res.status(200).send({ success: true, message: user })
+  } catch (error) {
+    res
+      .status(400)
+      .send({ success: false, message: `Error getting username: ${error}` })
+  }
+}
+
 // @desc    Create a new user
 // @route   POST /signup
 // @access  Public
@@ -22,19 +48,15 @@ const createUser = async (req, res) => {
 
     let user = await User.findOne({ email })
     if (user)
-      return res
-        .status(400)
-        .send({
-          success: false,
-          message: 'User with this Email already exists'
-        })
+      return res.status(400).send({
+        success: false,
+        message: 'User with this Email already exists'
+      })
     if (password.length < 8)
-      return res
-        .status(400)
-        .send({
-          success: false,
-          message: 'Password must be at least 8 characters long'
-        })
+      return res.status(400).send({
+        success: false,
+        message: 'Password must be at least 8 characters long'
+      })
 
     // Create the user
     let newUser = new User({
@@ -97,13 +119,13 @@ const setUsername = async (req, res) => {
       return res
         .status(400)
         .send({ success: false, message: 'Username canot be less than 3 char' })
-    const user = await User.findOne({ username })
+    const user = await User.findOne({ userName: username })
     if (user)
       return res
         .status(400)
         .send({ success: false, message: 'Username Already Exist' })
-    const currentUser = await User.findOne({userId:req.userId})
-    currentUser.username = username
+    const currentUser = await User.findOne({ userId: req.userId })
+    currentUser.userName = username
     currentUser.save()
     res.status(200).send({ success: true, message: 'Username Added' })
   } catch (error) {
@@ -149,18 +171,26 @@ const updateUser = async (req, res) => {
 // @route   POST /delete-user
 // @access  Private
 const deleteUser = async (req, res) => {
-    try {
-      const user = await User.findOneAndDelete({ userId: req.userId });
-      if (!user) {
-        return res.status(404).send({ success: false, message: 'User not found' });
-      }
-  
-      res.status(200).send({ success: true, message: 'User Deleted Successfully' });
-    } catch (error) {
-      console.error(error);
-      res.status(400).send({ success: false, message: 'Error deleting user' });
+  try {
+    const user = await User.findOneAndDelete({ userId: req.userId })
+    if (!user) {
+      return res.status(404).send({ success: false, message: 'User not found' })
     }
-  };
-  
 
-module.exports = { createUser, userLogin, setUsername, updateUser, deleteUser }
+    res
+      .status(200)
+      .send({ success: true, message: 'User Deleted Successfully' })
+  } catch (error) {
+    console.error(error)
+    res.status(400).send({ success: false, message: 'Error deleting user' })
+  }
+}
+
+module.exports = {
+  getUser,
+  createUser,
+  userLogin,
+  setUsername,
+  updateUser,
+  deleteUser
+}

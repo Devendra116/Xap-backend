@@ -5,10 +5,12 @@ const {
   userLogin,
   setUsername,
   updateUser,
-  deleteUser
+  deleteUser,
+  getUser
 } = require('../controllers/base')
 const { userAuth } = require('../middleware/auth')
 
+router.get('/user', getUser)
 router.post('/signup', createUser)
 router.post('/login', userLogin)
 router.post('/set-username', userAuth, setUsername)
