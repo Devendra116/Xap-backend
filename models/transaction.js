@@ -16,6 +16,7 @@ const transactionSchema = mongoose.Schema(
     toAddress: { type: String },
     srcTxnHash: { type: String, required: true },
     destTxnHash: { type: String },
+    srcTimestamp: { type: String },
     VaaId: { type: String }
   },
   {
