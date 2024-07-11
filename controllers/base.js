@@ -141,7 +141,21 @@ const setUsername = async (req, res) => {
 // @access  Private
 const updateUser = async (req, res) => {
   try {
-    const { email, name, password, bio } = req.body
+    const {
+      email,
+      name,
+      username,
+      password,
+      chain,
+      account_address,
+      bio,
+      twitterLink,
+      instagramLink,
+      discordLink,
+      telegramLink,
+      linkedinLink,
+      websiteLink
+    } = req.body
     const user = await User.findOne({ userId: req.userId })
     if (!user)
       return res.status(404).send({ success: false, message: 'User not found' })
@@ -150,6 +164,15 @@ const updateUser = async (req, res) => {
     if (email) user.email = email
     if (name) user.name = name
     if (bio) user.bio = bio
+    if (username) user.userName = username
+    if (chain) user.chainName = chain
+    if (account_address) user.accountAddress = account_address
+    if (twitterLink) user.twitterLink = twitterLink
+    if (instagramLink) user.instagramLink = instagramLink
+    if (discordLink) user.discordLink = discordLink
+    if (telegramLink) user.telegramLink = telegramLink
+    if (linkedinLink) user.linkedinLink = linkedinLink
+    if (websiteLink) user.websiteLink = websiteLink
 
     // Hash the password if it was updated
     if (password) {
