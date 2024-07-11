@@ -13,7 +13,7 @@ const isValidEmail = email => {
 // @access  Public
 const getUser = async (req, res) => {
   try {
-    const { username } = req.body
+    const { username } = req.params
     if (username && username.length < 3)
       return res
         .status(400)
