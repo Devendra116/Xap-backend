@@ -101,7 +101,8 @@ const userLogin = async (req, res) => {
       expiresIn: process.env.EXPIRE_TIME
     })
     // Return the token
-    res.cookie('token', token, { httpOnly: true }).send({ success: true })
+    res.status(200).send({ success: true, token: token })
+    // res.cookie('token', token, { httpOnly: true }).send({ success: true })
   } catch (error) {
     res
       .status(400)
