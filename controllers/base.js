@@ -39,19 +39,32 @@ const getUser = async (req, res) => {
 // @access  Public
 const createUser = async (req, res) => {
   try {
-    const { email, password } = req.body
+    const { email, password, username } = req.body
+
+    if (!email || !password || !username)
+      return res
+        .status(400)
+        .send({ success: false, message: 'All fields are required' })
 
     if (!isValidEmail(email))
       return res
         .status(400)
         .send({ success: false, message: 'Invalid Email Format' })
 
-    let user = await User.findOne({ email })
-    if (user)
+    let _user = await User.findOne({ email })
+    if (_user)
       return res.status(400).send({
         success: false,
         message: 'User with this Email already exists'
       })
+
+    let user = await User.findOne({ userName: username })
+    if (user)
+      return res.status(400).send({
+        success: false,
+        message: 'User with this Username already exists'
+      })
+
     if (password.length < 8)
       return res.status(400).send({
         success: false,
@@ -66,7 +79,7 @@ const createUser = async (req, res) => {
     // Hash the password
     const salt = await bcrypt.genSalt(10)
     newUser.password = await bcrypt.hash(password, salt)
-
+    newUser.userName = username
     // Save the user
     await newUser.save()
     res
@@ -103,7 +116,7 @@ const userLogin = async (req, res) => {
     // Return the token
     res
       .status(200)
-      .send({ success: true, token: token, userName: user.username })
+      .send({ success: true, token: token, userName: user.userName })
     // res.cookie('token', token, { httpOnly: true }).send({ success: true })
   } catch (error) {
     res
