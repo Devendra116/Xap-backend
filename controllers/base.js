@@ -103,7 +103,7 @@ const userLogin = async (req, res) => {
     // Return the token
     res
       .status(200)
-      .send({ success: true, token: token, userName: user.userName })
+      .send({ success: true, token: token, userName: user.username })
     // res.cookie('token', token, { httpOnly: true }).send({ success: true })
   } catch (error) {
     res
