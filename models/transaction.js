@@ -1,9 +1,9 @@
-import mongoose from 'mongoose'
+const mongoose = require('mongoose')
 const { ObjectId } = mongoose.Types
 
 const transactionSchema = mongoose.Schema(
   {
-    payer: { type: ObjectId, required: true }, // person who paid the amount
+    payer: { type: ObjectId }, // person who paid the amount
     payee: { type: ObjectId }, // person who received the amount
     network: { type: String, required: true }, // mainnet or testnet
     srcChain: { type: String, required: true },
@@ -16,12 +16,11 @@ const transactionSchema = mongoose.Schema(
     toAddress: { type: String },
     srcTxnHash: { type: String, required: true },
     destTxnHash: { type: String },
-    srcTimestamp: { type: String },
-    VaaId: { type: String }
+    srcTimestamp: { type: String }
   },
   {
     timestamps: true
   }
 )
 
-export default mongoose.model('Transactions', transactionSchema)
+module.exports = mongoose.model('Transactions', transactionSchema)
