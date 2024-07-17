@@ -26,7 +26,7 @@ const addTxn = async (req, res) => {
       !status ||
       !srcAmount ||
       !destAmount ||
-      !isCrossChain ||
+      typeof isCrossChain !== 'boolean' ||
       !fromAddress ||
       !toAddress ||
       !srcTxnHash ||
