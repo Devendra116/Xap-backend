@@ -39,14 +39,13 @@ const getUser = async (req, res) => {
 // @access  Public
 const createUser = async (req, res) => {
   try {
-    const { username,name,bio,account_address,chain_name } = req.body
+    const { username, name, bio, account_address, chain_name } = req.body
 
     if (!username || !account_address || !chain_name)
       return res
         .status(400)
         .send({ success: false, message: 'Please pass required fields' })
 
-    
     let _user = await User.findOne({ username })
     if (_user)
       return res.status(400).send({
@@ -54,13 +53,14 @@ const createUser = async (req, res) => {
         message: 'This Username already exists'
       })
 
-    
     let newUser = new User({
-      username,account_address,chain_name
+      username,
+      account_address,
+      chain_name
     })
-    
-    if(name) newUser.name = name
-    if(bio) newUser.bio = bio
+
+    if (name) newUser.name = name
+    if (bio) newUser.bio = bio
     await newUser.save()
     res
       .status(201)
@@ -68,7 +68,10 @@ const createUser = async (req, res) => {
   } catch (error) {
     res
       .status(400)
-      .send({ success: false, message: `Error Creating User Profile: ${error}` })
+      .send({
+        success: false,
+        message: `Error Creating User Profile: ${error}`
+      })
   }
 }
 
@@ -136,34 +139,50 @@ const setUsername = async (req, res) => {
 // @access  Private
 const updateUser = async (req, res) => {
   try {
-    const {
-      username,
-      name,
-      chain_name,
-      account_address,
-      bio,
-    } = req.body
+    const { username, name, chain_name, account_address, bio } = req.body
 
+    if (!account_address)
+      return res
+        .status(400)
+        .send({ success: false, message: 'Please pass account_address' })
 
     const user = await User.findOne({ account_address: account_address })
-    if (!user)
-      return res.status(404).send({ success: false, message: 'No Such Username found' })
+    if (!user) {
+      if (!username || !chain_name)
+        return res
+          .status(400)
+          .send({ success: false, message: 'Please pass required fields' })
+      let newUser = new User({
+        username,
+        account_address,
+        chain_name
+      })
 
-    // Update the user information
-    if (name) user.name = name
-    if (bio) user.bio = bio
-    if (username) user.userName = username
-    if (chain_name) user.chain_name = chain_name
+      if (name) newUser.name = name
+      if (bio) newUser.bio = bio
+      await newUser.save()
+      res
+        .status(201)
+        .send({ success: true, message: 'User Profile Created Successfully' })
+    } else {
+      if (name) user.name = name
+      if (bio) user.bio = bio
+      if (username) user.userName = username
+      if (chain_name) user.chain_name = chain_name
 
-    await user.save()
+      await user.save()
 
-    res
-      .status(200)
-      .send({ success: true, message: 'User Profile Updated Successfully' })
+      res
+        .status(200)
+        .send({ success: true, message: 'User Profile Updated Successfully' })
+    }
   } catch (error) {
     res
       .status(400)
-      .send({ success: false, message: `Error Updating User Profile ${error} ` })
+      .send({
+        success: false,
+        message: `Error Creating/Updating User Profile ${error} `
+      })
   }
 }
 

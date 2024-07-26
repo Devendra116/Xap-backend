@@ -14,7 +14,7 @@ const { userAuth } = require('../middleware/auth')
 router.get('/user', getUser)
 router.get('/all-txns', getAllTxns)
 router.get('/txns', getUserTxns)
-router.post('/signup', createUser)
+router.post('/signup', createUser)  // not using 
 router.post('/update-user', updateUser)
 router.post('/add-txn', addTxn)
 // router.post('/login', userLogin)
