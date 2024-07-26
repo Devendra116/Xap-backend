@@ -1,27 +1,15 @@
 const mongoose = require('mongoose')
-const ObjectId = mongoose.Types.ObjectId
 
 const userSchema = mongoose.Schema(
   {
-    userId: { type: ObjectId, default: new ObjectId() },
-    userName: { type: String, index: true },
-    email: { type: String, required: true },
-    password: { type: String, required: true },
-    profileImage: { type: String },
-    name: { type: String },
+    username: { type: String, index: true },
+    name: { type: String, required: true },
     bio: { type: String },
-    chainName: { type: String },
-    accountAddress: { type: String },
-    twitterLink: { type: String },
-    instagramLink: { type: String },
-    discordLink: { type: String },
-    telegramLink: { type: String },
-    linkedinLink: { type: String },
-    websiteLink: { type: String },
-    isProfileComplete: { type: Boolean, default: false }
+    chain_name: { type: String, required: true },
+    account_address: { type: String, required: true }
   },
   {
     timestamps: true
   }
 )
-module.exports = mongoose.model('User', userSchema)
+module.exports = mongoose.model('XapUser', userSchema)

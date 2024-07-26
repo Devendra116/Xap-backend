@@ -7,48 +7,52 @@ const Transaction = require('../models/transaction')
 const addTxn = async (req, res) => {
   try {
     const {
-      network,
-      srcChain,
-      destChain,
+      network_type,
+      sender_username,
+      recipient_username,
+      src_chain,
+      dest_chain,
       status,
-      srcAmount,
-      destAmount,
-      isCrossChain,
-      fromAddress,
-      toAddress,
-      srcTxnHash,
-      srcTimestamp
+      src_amount,
+      dest_amount,
+      is_cross_chain,
+      sender_address,
+      recipient_address,
+      src_txn_hash,
+      dest_txn_hash
     } = req.body
 
     if (
-      !network ||
-      !srcChain ||
-      !status ||
-      !srcAmount ||
-      !destAmount ||
-      typeof isCrossChain !== 'boolean' ||
-      !fromAddress ||
-      !toAddress ||
-      !srcTxnHash ||
-      !srcTimestamp
+      !network_type ||
+      !sender_username ||
+      !src_chain ||
+      !dest_chain ||
+      !src_amount ||
+      !dest_amount ||
+      !is_cross_chain ||
+      !sender_address ||
+      !recipient_address ||
+      !src_txn_hash 
     )
       return res
         .status(400)
         .send({ success: false, message: 'Required fields are missing' })
 
-    const transaction = new Transaction({
-      network,
-      srcChain,
-      destChain,
-      status,
-      srcAmount,
-      destAmount,
-      isCrossChain,
-      fromAddress,
-      toAddress,
-      srcTxnHash,
-      srcTimestamp
+    let transaction = new Transaction({
+      network_type ,
+      sender_username ,
+      src_chain ,
+      dest_chain ,
+      src_amount ,
+      dest_amount ,
+      is_cross_chain ,
+      sender_address ,
+      recipient_address ,
+      src_txn_hash 
     })
+    if(status) transaction.status = status
+    if(recipient_username) transaction.recipient_username = recipient_username
+    if(dest_txn_hash) transaction.dest_txn_hash = dest_txn_hash 
     await transaction.save()
 
     res.status(200).send({ success: true, message: 'Transaction Added' })
@@ -79,19 +83,19 @@ const getAllTxns = async (req, res) => {
 // @access  Public
 const getUserTxns = async (req, res) => {
   try {
-    const { toAddress } = req.query
-    if (!toAddress)
+    const { recipient_address } = req.query
+    if (!recipient_address)
       return res
         .status(400)
-        .send({ success: false, message: 'Plese provide a valid address' })
+        .send({ success: false, message: 'Plese provide recipient_address' })
 
-    const txns = await Transaction.find({ toAddress }).select('-_id -__v')
+    const txns = await Transaction.find({ recipient_address }).select('-_id -__v')
 
     res.status(200).send({ success: true, message: txns })
   } catch (error) {
     res
       .status(400)
-      .send({ success: false, message: `Error getting username: ${error}` })
+      .send({ success: false, message: `Error getting User Txns: ${error}` })
   }
 }
 module.exports = {

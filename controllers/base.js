@@ -18,7 +18,7 @@ const getUser = async (req, res) => {
       return res
         .status(400)
         .send({ success: false, message: 'Username canot be less than 3 char' })
-    const user = await User.findOne({ userName: username }).select(
+    const user = await User.findOne({ username: username }).select(
       '-password -_id -userId -__v -isProfileComplete'
     )
 
@@ -39,56 +39,36 @@ const getUser = async (req, res) => {
 // @access  Public
 const createUser = async (req, res) => {
   try {
-    const { email, password, username } = req.body
+    const { username,name,bio,account_address,chain_name } = req.body
 
-    if (!email || !password || !username)
+    if (!username || !account_address || !chain_name)
       return res
         .status(400)
-        .send({ success: false, message: 'All fields are required' })
+        .send({ success: false, message: 'Please pass required fields' })
 
-    if (!isValidEmail(email))
-      return res
-        .status(400)
-        .send({ success: false, message: 'Invalid Email Format' })
-
-    let _user = await User.findOne({ email })
+    
+    let _user = await User.findOne({ username })
     if (_user)
       return res.status(400).send({
         success: false,
-        message: 'User with this Email already exists'
+        message: 'This Username already exists'
       })
 
-    let user = await User.findOne({ userName: username })
-    if (user)
-      return res.status(400).send({
-        success: false,
-        message: 'User with this Username already exists'
-      })
-
-    if (password.length < 8)
-      return res.status(400).send({
-        success: false,
-        message: 'Password must be at least 8 characters long'
-      })
-
-    // Create the user
+    
     let newUser = new User({
-      email
+      username,account_address,chain_name
     })
-
-    // Hash the password
-    const salt = await bcrypt.genSalt(10)
-    newUser.password = await bcrypt.hash(password, salt)
-    newUser.userName = username
-    // Save the user
+    
+    if(name) newUser.name = name
+    if(bio) newUser.bio = bio
     await newUser.save()
     res
       .status(201)
-      .send({ success: true, message: 'User Created Successfully' })
+      .send({ success: true, message: 'User Profile Created Successfully' })
   } catch (error) {
     res
       .status(400)
-      .send({ success: false, message: `Error Creating User: ${error}` })
+      .send({ success: false, message: `Error Creating User Profile: ${error}` })
   }
 }
 
@@ -102,7 +82,7 @@ const userLogin = async (req, res) => {
     if (!user)
       return res
         .status(400)
-        .send({ success: false, message: 'Invalid Credentials' })
+        .send({ success: false, message: 'Email not found' })
     // Compare the passwords
     const isMatch = await bcrypt.compare(password, user.password)
     if (!isMatch)
@@ -157,52 +137,33 @@ const setUsername = async (req, res) => {
 const updateUser = async (req, res) => {
   try {
     const {
-      email,
-      name,
       username,
-      password,
-      chain,
+      name,
+      chain_name,
       account_address,
       bio,
-      twitterLink,
-      instagramLink,
-      discordLink,
-      telegramLink,
-      linkedinLink,
-      websiteLink
     } = req.body
-    const user = await User.findOne({ userId: req.userId })
+
+
+    const user = await User.findOne({ account_address: account_address })
     if (!user)
-      return res.status(404).send({ success: false, message: 'User not found' })
+      return res.status(404).send({ success: false, message: 'No Such Username found' })
 
     // Update the user information
-    if (email) user.email = email
     if (name) user.name = name
     if (bio) user.bio = bio
     if (username) user.userName = username
-    if (chain) user.chainName = chain
-    if (account_address) user.accountAddress = account_address
-    if (twitterLink) user.twitterLink = twitterLink
-    if (instagramLink) user.instagramLink = instagramLink
-    if (discordLink) user.discordLink = discordLink
-    if (telegramLink) user.telegramLink = telegramLink
-    if (linkedinLink) user.linkedinLink = linkedinLink
-    if (websiteLink) user.websiteLink = websiteLink
+    if (chain_name) user.chain_name = chain_name
 
-    // Hash the password if it was updated
-    if (password) {
-      const salt = await bcrypt.genSalt(10)
-      user.password = await bcrypt.hash(password, salt)
-    }
     await user.save()
 
     res
       .status(200)
-      .send({ success: true, message: 'User updated Successfully' })
+      .send({ success: true, message: 'User Profile Updated Successfully' })
   } catch (error) {
     res
       .status(400)
-      .send({ success: false, message: `Error Updating User ${error} ` })
+      .send({ success: false, message: `Error Updating User Profile ${error} ` })
   }
 }
 
