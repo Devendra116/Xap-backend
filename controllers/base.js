@@ -167,7 +167,7 @@ const updateUser = async (req, res) => {
     } else {
       if (name) user.name = name
       if (bio) user.bio = bio
-      if (username) user.userName = username
+      if (username) user.username = username
       if (chain_name) user.chain_name = chain_name
 
       await user.save()
