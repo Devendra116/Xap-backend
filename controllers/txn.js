@@ -29,7 +29,7 @@ const addTxn = async (req, res) => {
       !dest_chain ||
       !src_amount ||
       !dest_amount ||
-      !is_cross_chain ||
+      typeof is_cross_chain !== 'boolean' ||
       !sender_address ||
       !recipient_address ||
       !src_txn_hash 
